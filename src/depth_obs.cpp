@@ -78,7 +78,7 @@ int framesReceived = 0;
 ros::Publisher obs_pub;
 
 
-const int max_obstacle_count = 3;
+const int max_obstacle_count = 10;
 const float min_distance_from_robot = 2.00f;
 const float min_xy_distance_between_obstacles = 1.0f;
 
@@ -107,14 +107,16 @@ std::vector<Obstacle2> obstaclesv;
 
 void cameraCallback2(const sensor_msgs::PointCloud2ConstPtr& msg) {
 	framesReceived++;
-	if (framesReceived % 30 == 0) {
+	if (framesReceived % 3 == 0) {
 		if (msg.get()) {
+			/*
 			ROS_INFO("cameraCallback %d [%dx%d] point_step:%d row_step:%d is_dense:%d stamp:%lld seq:%d frame_id:%s",
 					framesReceived,
 					(int) msg->width, (int)msg->height,
 					(int) msg->point_step, (int)msg->row_step,
 					(int) msg->is_dense,
 					msg->header.stamp.toNSec(), msg->header.seq, msg->header.frame_id.c_str());
+			*/
 
 			MyPoint* fp = (MyPoint*)msg->data.data();
 			int ystep = (msg->row_step - msg->point_step*msg->width)/msg->point_step;
@@ -205,12 +207,14 @@ void cameraCallback2(const sensor_msgs::PointCloud2ConstPtr& msg) {
 					omsg.range = min_distance;
 					obs_pub.publish(omsg);
 				}
+				/*
 				ROS_INFO("point MIN[%.2fx%.2fx%.2f] %.2f",
 						obstacle.x, obstacle.y, obstacle.z, min_distance
 						);
+				*/
 			}
 		} else {
-			ROS_INFO("cameraCallback %d", framesReceived);
+			//ROS_INFO("cameraCallback %d", framesReceived);
 		}
 	}
 }
